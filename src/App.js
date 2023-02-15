@@ -1,57 +1,52 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 
-import CourseGoalList from './components/CourseGoals/CourseGoalList/CourseGoalList';
-import CourseInput from './components/CourseGoals/CourseInput/CourseInput';
+import MoviesList from './components/MoviesList';
 import './App.css';
 
-const App = () => {
-  const [courseGoals, setCourseGoals] = useState([
-    { text: 'Do all exercises!', id: 'g1' },
-    { text: 'Finish the course!', id: 'g2' }
-  ]);
+const App=() => {
+  const [movies, setMovies]= useState([]);
+  async function fetchMoviesHandler(){
+    const response=await fetch('https://swapi.dev/api/films');
+    const data= await response.json();
+    
+      const transformedMovies=data.results.map(movieData=>{
+        return {
+          id: movieData.episode_id,
+          title: movieData.title,
+          openingText: movieData.opening_crawl,
+          releaseDate: movieData.release_date
+        }
+      })
+      setMovies(transformedMovies)
+    }
 
-  const addGoalHandler = enteredText => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = [...prevGoals];
-      updatedGoals.unshift({ text: enteredText, id: Math.random().toString() });
-      return updatedGoals;
-    });
-  };
-
-  const deleteItemHandler = goalId => {
-    setCourseGoals(prevGoals => {
-      const updatedGoals = prevGoals.filter(goal => goal.id !== goalId);
-      return updatedGoals;
-    });
-  };
-
-  let content = (
-    <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-  );
-
-  if (courseGoals.length > 0) {
-    content = (
-      <CourseGoalList items={courseGoals} onDeleteItem={deleteItemHandler} />
-    );
-  }
+  
 
   return (
-    <div>
-      <section id="goal-form">
-        <CourseInput onAddGoal={addGoalHandler} />
+    <React.Fragment>
+      <section>
+        <button onClick={fetchMoviesHandler} >Fetch Movies</button>
       </section>
-      <section id="goals">
-        {content}
-        {/* {courseGoals.length > 0 && (
-          <CourseGoalList
-            items={courseGoals}
-            onDeleteItem={deleteItemHandler}
-          />
-        ) // <p style={{ textAlign: 'center' }}>No goals found. Maybe add one?</p>
-        } */}
+      <section>
+        <MoviesList movies={movies} /> 
       </section>
-    </div>
+    </React.Fragment>
   );
-};
-
+}
 export default App;
+
+/*function fetchMoviesHandler(){
+  fetch('https://swapi.dev/api/films').then((response)=>{
+    return response.json();
+  })
+  .then((data)=>{
+    const transformedMovies=data.results.map(movieData=>{
+      return {
+        id: movieData.episode_id,
+        title: movieData.title,
+        openingText: movieData.opening_crawl,
+        releaseDate: movieData.release_date
+      }
+    })
+    setMovies(transformedMovies)
+  })*/
