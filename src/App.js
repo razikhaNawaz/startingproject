@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -7,13 +7,14 @@ const App=() => {
   const [movies, setMovies]= useState([]);
   const [isLoading, setIsLoading]= useState(false);//initially set loading to false
   const [error, setError]= useState(null);
-  const [timer, setTimer]=useState(null);
+  //const [timer, setTimer]=useState(null);
 
-  async function fetchMoviesHandler(){
+ 
+  const fetchMoviesHandler=useCallback(async()=>{
     setIsLoading(true);   //when is function is called we need to set to true
     setError(null);
     try {
-      const response=await fetch('https://swapi.dev/api/film');
+      const response=await fetch('https://swapi.dev/api/films');
       if (!response.ok){
         throw new Error('Something went wrong');
       }
@@ -33,8 +34,12 @@ const App=() => {
       }
 
         setIsLoading(false);  //once data is retrieved we need to set o false 
-    }
-    useEffect(() => {
+    }, []);
+    useEffect(()=>{
+      fetchMoviesHandler();
+    }, [fetchMoviesHandler])
+  
+    /*useEffect(() => {
       return () => {
         clearInterval(timer);
       };
@@ -42,21 +47,20 @@ const App=() => {
     const retryHandler = () => {
       setTimer(setInterval(() => {
         console.log("Retrying");
-      }, 5000));
+      }, 1000));
     };
   
     const cancelHandler = () => {
       clearInterval(timer);
-    };
+    };*/
     let content= <p>Found no movies!</p>  
     if(error){
-     content=<p>{error} && {<button onClick={retryHandler}>Retrying...</button>} && 
+      content=<p>{error}</p>
+     /*content=<p>{error} && {<button onClick={retryHandler}>Retrying...</button>} && 
      {<button onClick={cancelHandler}>Cancel</button>}</p>;
-     }
-    
-    
-   
-   if (movies.length>0) {
+     }*/
+    }
+    if (movies.length>0) {
     content= <MoviesList movies={movies} />;
    }
    if (isLoading) {
@@ -76,22 +80,3 @@ return (
 }
 export default App;
 
-/*function fetchMoviesHandler(){
-  fetch('https://swapi.dev/api/films').then((response)=>{
-    return response.json();
-  })
-  .then((data)=>{
-    const transformedMovies=data.results.map(movieData=>{
-      return {
-        id: movieData.episode_id,
-        title: movieData.title,
-        openingText: movieData.opening_crawl,
-        releaseDate: movieData.release_date
-      }
-    })
-    setMovies(transformedMovies)
-
-
-     {!isLoading && <MoviesList movies={movies} />} //we render the movies list when loading
-     {isLoading && <P>Loading...</P>} when loading it should display like this
-  })*/
