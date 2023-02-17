@@ -9,7 +9,14 @@ const Form=(props)=>{
 
     const addMovieHandler=(event)=>{
         event.preventDefault();
-        console.log(enteredTitle, enteredOpeningText, enteredReleaseDate)
+        const newMovieObj={
+            'enteredTitle':enteredTitle,
+            'enteredOpeningText':enteredOpeningText,
+            'relasedate': enteredReleaseDate
+        }
+        
+        console.log(newMovieObj);
+        
         setEnteredTitle('');
         setEnteredOpeningText('');
         setEnteredReleaseDate('');
